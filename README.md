@@ -66,3 +66,55 @@ python inventory_cli.py
 
 Un menu interactif s’affichera pour te guider.
 
+## Commandes disponibles
+
+| Commande                     | Explication                                      |
+|------------------------------|--------------------------------------------------|
+| `import fichier.csv`         | Ajoute des produits depuis un fichier CSV       |
+| `search -n Nom`              | Recherche un produit par son nom                |
+| `search -c Catégorie`        | Recherche une catégorie de produits             |
+| `search -min 100 -max 500`   | Recherche par gamme de prix                     |
+| `report fichier.txt`         | Génère un rapport d'inventaire                  |
+| `quit`                       | Quitte le programme                             |
+
+🔹 Exemple : Recherche d’un produit électronique au-dessus de 200€
+
+```bash
+search -c Électronique -min 200
+```
+
+## Rapport généré
+Le rapport produit un fichier texte contenant un résumé de l’inventaire.
+Exemple de rapport :
+
+```yaml
+# Rapport d'Inventaire
+Produits distincts : 5
+Quantité totale : 125
+Valeur totale des stocks : 78 950.00 €
+# Détails par catégorie
+Catégorie : Électronique
+  - Nombre de produits : 3
+  - Valeur totale : 58 500.00 €
+Catégorie : Mobilier
+  - Nombre de produits : 2
+  - Valeur totale : 20 450.00 €
+```
+
+## Tester le programme
+
+```bash
+python -m unittest test_product_tracker.py
+```
+
+## Organisation du projet
+
+```bash
+.
+├── inventory.db         # Base de données SQLite
+├── create_sample_data.py  # Génération de données de test
+├── inventory_cli.py     # Interface en ligne de commande
+├── product_tracker.py   # Gestion de l’inventaire (ajout/recherche)
+├── test_product_tracker.py  # Tests unitaires
+├── README.md            # Documentation du projet
+```
