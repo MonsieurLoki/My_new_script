@@ -98,6 +98,32 @@ class InventoryShell(cmd.Cmd):
             self.logger.error(f"Erreur lors de la recherche: {str(e)}")
 
 
+    def do_report(self, arg):
+        """
+        Génère un rapport d'inventaire.
+        Usage: report [nom_du_fichier.txt]
+        """
+        filename = arg.strip() or f"rapport_inventaire_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+
+        try:
+            self.tracker.generate_inventory_report(filename)
+            print(f"Rapport généré avec succès: {filename}")
+            self.logger.info(f"Rapport généré: {filename}")
+        except Exception as e:
+            print(f"Erreur lors de la génération du rapport: {str(e)}")
+            self.logger.error(f"Erreur de génération de rapport: {str(e)}")
+
+    def do_quit(self, arg):
+        """Quitte le programme"""
+        print("Au revoir!")
+        self.logger.info("Session terminée")
+        return True
+
+    # Alias communs
+    do_q = do_quit
+    do_exit = do_quit
+
+
 def main():
     try:
         InventoryShell().cmdloop()
