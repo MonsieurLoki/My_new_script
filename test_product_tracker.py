@@ -56,5 +56,67 @@ class TestProductTracker(unittest.TestCase):
             pass  # Ignorer si le fichier est déjà supprimé
 
 
+    def test_import_data(self):
+        """Test de l'import des données"""
+        self.tracker.import_data(self.csv_path)
+        products = self.tracker.find_products()
+        self.assertEqual(len(products), 2)
+        self.assertEqual(products[0]["name"], "Ordinateur Test")
+        self.assertEqual(float(products[0]["current_price"]), 999.99)
+
+    def test_search_by_name(self):
+        """Test de la recherche par nom"""
+        self.tracker.import_data(self.csv_path)
+        results = self.tracker.find_products(name="Ordinateur")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["name"], "Ordinateur Test")
+
+    def test_search_by_category(self):
+        """Test de la recherche par catégorie"""
+        self.tracker.import_data(self.csv_path)
+        results = self.tracker.find_products(category="Mobilier")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["category"], "Mobilier")
+
+    def test_search_by_price_range(self):
+        """Test de la recherche par plage de prix"""
+        self.tracker.import_data(self.csv_path)
+        results = self.tracker.find_products(min_price=200, max_price=500)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["name"], "Bureau Test")
+
+    def test_report_generation(self):
+        """Test de la génération de rapport"""
+        self.tracker.import_data(self.csv_path)
+        report_fd, report_path = tempfile.mkstemp()
+        os.close(report_fd)
+
+        try:
+            self.tracker.generate_inventory_report(report_path)
+
+            # Vérifier le contenu du rapport
+            with open(report_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                self.assertIn("Rapport d'inventaire", content)
+                self.assertIn("Produits distincts: 2", content)
+                self.assertIn("Électronique", content)
+                self.assertIn("Mobilier", content)
+        finally:
+            try:
+                os.unlink(report_path)
+            except PermissionError:
+                pass
+
+    def test_invalid_file_import(self):
+        """Test de la gestion des erreurs lors de l'import"""
+        with self.assertRaises(FileNotFoundError):
+            self.tracker.import_data("fichier_inexistant.csv")
+
+    def test_empty_search_results(self):
+        """Test de recherche sans résultats"""
+        self.tracker.import_data(self.csv_path)
+        results = self.tracker.find_products(name="ProduitInexistant")
+        self.assertEqual(len(results), 0)
+
 if __name__ == '__main__':
     unittest.main()
